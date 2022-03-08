@@ -1,8 +1,17 @@
 
 
 ----
+
+
+
 ##Shope Creek Trail System
+
+
+
 ###Introduction
+
+
+
 - This Web Map depicts the longest loop in the Shope Creek Trail System in Asheville, NC. Used primarily by mountain bikers, this trail includes a number of features and steep downhill sections. I chose this trail system as I frequented it upon opening of the gravel access road in 2012.
 
 ---------
