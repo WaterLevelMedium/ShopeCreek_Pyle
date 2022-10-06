@@ -54,11 +54,13 @@
 			border: 1px solid black;
 			border-radius: 3px;
 			z-index: 700;
+			font-family: 'helvetica', sans-serif;
 		}
 		li {
 			font-size: .93em;
 			line-height: 1.5em;
 			font-weight: lighter;
+			font-family: 'helvetica', sans-serif;
 		}
 
 		button {
@@ -83,19 +85,19 @@
 		h3 {
 
 			margin: 2px;
-			font-family: cursive;
 			font-size: 16px;
 			font-weight: 800;
+			font-family: 'helvetica', sans-serif;
 		}
 		#boxtitle {
+			font-family: 'helvetica', sans-serif;
 			text-align: center;
 		}
 		#pageTitle {
 			position: absolute;
-			left: 60px;
+			left: 55px;
 			font-size: 20px;
-			font-family: "Noto Sans", serif;
-			letter-spacing: .03em;
+			font-family: 'helvetica', sans-serif;
 			padding: 9px;
 			background: #fefef2;
 			border: 1px solid grey;
@@ -155,7 +157,7 @@
 				<!-- sources below  tileLayer  polyline segments -->
 
 				<div id="citations_Lower">
-				<p>Map author: River Pyle <a href="https://leaflet-extras.github.io/leaflet-providers/preview/#filter=USGS.USImageryTopo">USGS Tile Layer - Leaflet</a> </p>
+				<p>Map author: River Pyle <a href="https://leaflet-extras.github.io/leaflet-providers/preview/#filter=Esri.WorldImagery">ESRI - World Imagery Tile Layer, Leaflet Providers</a> </p>
 				<p><a href="https://www.hikewnc.info/trailheads/shope-creek/"> More info at HikeWNC.org </a>,<a href='https://www.mtbikewnc.com/trails/pisgah-national-forest/shope-creek-forest-road'>mtbikewnc.com</a></p>
 				</div>
 
@@ -188,39 +190,26 @@ var options = {
 console.log(data);
 
 //creation of the Leaflet map
-		var map = L.map('map', options);
+var map = L.map('map', options);
 
 //request to load basemap
 
+var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+}).addTo(map);
 
 
+
+// imagery_basemap
 /*
-ALTERNATE_TOPOBASEMAP
-ESRI World Topographic
-var Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-	attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
-});
-*/
-
 var USGS_USImageryTopo = L.tileLayer('https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer/tile/{z}/{y}/{x}', {
 	maxZoom: 20,
 	attribution: 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
 }).addTo(map);
-
-/*
-string content to be inserted into a tooltip
-		var message = 'Beacon Heights!';
-
-create a Leaflet marker, centered on the map's center.
-	L.marker(map.getCenter())
-			.bindTooltip(message) //bind the tooltip and message to the marker
-			.addTo(map) // add the marker to the map`
-			.openTooltip(); // open the tooltip
 */
 
-//Start map features -- LineString -- markers -- tooltip
 
-var myRoute = L.geoJson(data, {
+var trailSystem = L.geoJson(data, {
 	filter : function(feature) {
 			if(feature.geometry.type =="LineString") {
 					return feature;
@@ -229,12 +218,13 @@ var myRoute = L.geoJson(data, {
 	style : function(feature) {
 			return {
 				color: "blue",
-				weight: 3,
-				opacity: .7,
-				dashArray: "5, 4"
+				weight: 3.4,
+				opacity:.7,
+				dashArray: "5, 2"
 			}
 		}
 		}).addTo(map);
+
 
 // map.fitBounds(myRoute.getBounds());
 // ^ with this the text blocks out part of the trail, use troubleshot centerpoint
@@ -243,8 +233,15 @@ var myRoute = L.geoJson(data, {
 
 // 35.654591, -82.440579 = Parking area
 
-var parkArea = L.marker([35.654591, -82.440579] , markerOptions).addTo(map)
-				.bindTooltip('<b>Shope Creek Parking Area</b><br><br>Start of Trail System.')
+var default_circle_options = {
+	color: "#fefef2",
+	opacity: .8,
+	fillColor: '#0096FF',
+	radius: 50,
+	fillOpacity: .7,
+};
+
+var parkArea = L.marker([35.654591, -82.440579] , markerOptions).addTo(map).bindPopup('<b>Shope Creek Parking Area</b><br><br>Start of Trail System.<br> Trails exit the parking area in three directions.');
 
 var markerOptions = {
 	title: 'Parking Area' ,
@@ -254,69 +251,44 @@ var markerOptions = {
 };
 
 // end of double track logging trails - fire break
-var erstHalteOpt = {
-	color: "#fefef2",
-	opacity: .8,
-	fillColor: '#0096FF',
-	radius: 50,
-	fillOpacity: .7,
-};
 
-var firemensJunction = L.circle([35.649398, -82.433414] , erstHalteOpt).addTo(map);
 
-firemensJunction.bindTooltip('<b>Insection with ridge line &<br/>Riceville Fire Department Trails.</b><br><br>Sharp climb with loose soil, heavy brush.<br> Reccomended for mountain bikers intent on <br>completing full loop, or well-prepared hikers. ');
+var firemensJunction = L.circle([35.649398, -82.433414] , default_circle_options).addTo(map);
+
+firemensJunction.bindPopup('<b>Insection with ridge line &<br/>Riceville Fire Department Trails.</b><br><br>Sharp climb with loose soil, heavy brush.<br> Reccomended for mountain bikers intent on <br>completing full loop, or well-prepared hikers. ');
 
 
 //parkway drop in intersection circle
 
-PDI_options = {
-	color: "#fefef2",
-	opacity: .8,
-	fillColor: '#0096FF',
-	radius: 50,
-	fillOpacity: .7,
-}
 
-var parkwayDropIn = L.circle([35.670390, -82.425793] , PDI_options).addTo(map);
+
+var parkwayDropIn = L.circle([35.670390, -82.425793] , default_circle_options).addTo(map);
 
 var parkwayDropIn_Infotxt = '<b>Intersection with brush trail to Blue Ridge Parkway</b> <br/><br/>End of climb. An unmarked trail leading north eventually intersects<br/> the BRP, however, this trail is used infequently by mountain bikers.<br/> Start of descent into valley. ';
-parkwayDropIn.bindTooltip(parkwayDropIn_Infotxt);
+parkwayDropIn.bindPopup(parkwayDropIn_Infotxt);
 
 
 //jumpline start
 // 35.670123, -82.431903
-
-var JLS_Options = {
-	color: "#ff3300",
-	opacity: .8,
-	fillColor: '#0096FF',
-	radius: 50,
-	fillOpacity: .7,
-}
-
-var jumplineStart = L.circle([35.670900, -82.432520] , JLS_Options).addTo(map);
+var jumplineStart = L.circle([35.670900, -82.432520] , default_circle_options).addTo(map);
 
 var JLS_Infotxt = '<b>Start of Jump-line</b> <br/><br/> Mixture of natural and built features. <br/>Includes rock table-tops, cross-hatched log rides,<br/> and jump sets constructed in the intermittent streambed. ';
 
-jumplineStart.bindTooltip(JLS_Infotxt);
+jumplineStart.bindPopup(JLS_Infotxt);
 
 
 // misleading loop 35.656555, -82.438555
 
-var ML_Options = {
-	color: "#fefef2",
-	opacity: .8,
-	fillColor: '#0096FF',
-	radius: 50,
-	fillOpacity: .7,
-};
 
-var misleadingLoop = L.circle([35.658705, -82.435680], ML_Options).addTo(map);
+var misleadingLoop = L.circle([35.658705, -82.435680], default_circle_options).addTo(map);
 
 var ML_Infotxt = '<b>Start of inner loop</b> <br/><br/> This trail follows the historic logging tracks within<br/> a small, self-contained valley. Used primarily for hiking,<br/> this loop includes a small waterfalls and native plant species. ';
 
-misleadingLoop.bindTooltip(ML_Infotxt);
+misleadingLoop.bindPopup(ML_Infotxt);
 
+var campSite = L.circle([35.66382, -82.43885], default_circle_options).addTo(map).bindPopup('<b>Camp Site</b><br><br>This is a primitive camp site in a cleared section of forest. Provides a good view of the surrounding landscape. However, heed caution as camping restricted in this area.');
+
+var upperFalls = L.circle([35.66301, -82.44562], default_circle_options).addTo(map).bindPopup('<b>Upper Falls</b><br><br>This small water fall rests at the top of the left trail system. Secluded and scenic, this is the shortest and most rewarding hike in the trail system.');
 
 var markersConsole = L.geoJson(data, {
 	filter : function(feature) {
@@ -334,7 +306,21 @@ var markersConsole = L.geoJson(data, {
 
 //end map features
 
-//toggle map function
+// map features
+
+function getCoor(e) {
+	var coords = e.latlng.toString().replace('LatLng(','').replace(')','' );
+	console.log(coords) //verify coordinates
+	var popup = L.popup()
+        .setLatLng(e.latlng)
+        .setContent(coords)
+        .openOn(map);
+
+	popup.setLatLng(e.latlng).openOn(map);
+
+};
+map.on('click', getCoor); //debugging for point features.
+
 function hideMap() {
 	var x = document.getElementById('map');
 	if(x.style.display == "none") {
