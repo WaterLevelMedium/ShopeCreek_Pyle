@@ -226,10 +226,6 @@ var trailSystem = L.geoJson(data, {
 		}).addTo(map);
 
 
-// map.fitBounds(myRoute.getBounds());
-// ^ with this the text blocks out part of the trail, use troubleshot centerpoint
-
-//start landmarks - 4 placemarkers beg & end , 2 middle
 
 // 35.654591, -82.440579 = Parking area
 
@@ -319,7 +315,7 @@ function getCoor(e) {
 	popup.setLatLng(e.latlng).openOn(map);
 
 };
-map.on('click', getCoor); //debugging for point features.
+//map.on('click', getCoor); //debugging for point features.
 
 function hideMap() {
 	var x = document.getElementById('map');
